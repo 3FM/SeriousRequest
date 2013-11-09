@@ -22,17 +22,28 @@ Campaign.prototype.getURL = function() {
   return this.collection.getURL(this.id);
 };
 
+Campaign.prototype.getPhotoURL = function() {
+  return this.collection.getPhotoURL(this.id);
+};
+
 Campaign.prototype.getSponsorAmount = function() {
   return parseFloat($(this.data).find("totalsponsoramount").html());
 };
 
 Campaign.prototype.getHtml = function() {
+  var returnstr = "";
+  returnstr += '<a href="http://www.kominactie.nl' +this.getURL()+'" target="_blank">';
+  returnstr += "<strong>" + this.getName() + "</strong><br />";
+  returnstr += '<img align="center" src="http://www.kominactie.nl/' + this.getPhotoURL() + '" />';
   var amount = this.getSponsorAmount();
-  return this.getName() + (amount > 0 ? " &euro;" + this.getSponsorAmount() : "");
+  returnstr += (amount > 0 ? "<p>Reeds &euro; " + this.getSponsorAmount() + " opgehaald!</p><br />" : "" );
+  returnstr += returnstr + "</a>";
+  return returnstr;
 };
 Campaign.prototype.getCampaigners = function() {
   return this.collection.getCampaigners(this.id);
 };
+
 
 function Campaigner(id) {
   this.id = id;
@@ -65,7 +76,11 @@ Collection.prototype.getCity = function(campaignId)  {
   return (this.geodata[campaignId] || {city: null}) .city;
 };
 Collection.prototype.getURL = function(campaignId)  {
-  return (this.geodata[campaignId] || {URL: null}) .URL;
+  return (this.geodata[campaignId] || {url: null}) .url;
+};
+
+Collection.prototype.getPhotoURL = function(campaignId)  {
+  return (this.geodata[campaignId] || {photo: null}) .photo;
 };
 Collection.prototype.getCampaign = function(id, callback) {
   this.getActiveActiveCampaigns(function() {
@@ -162,10 +177,18 @@ function Map(collection) {
   collection.getActiveCampaigns(function(result) {
     $.each(result, function(index, value) {
       if (value.getLatLong()) {
+        var sponsorAmount = value.getSponsorAmount();
+        var size = sponsorAmount / 1000;
+        if (size > 1) size = 1;
         var latlong = value.getLatLong().split(", ").map(parseFloat);
         var marker = L.marker(latlong);
         var icon = L.icon({
-          iconSize : [Math.random() * 200, Math.random() * 200]
+          iconAnchor: [size * 12, size * 41],
+          popupAnchor: [1, -34 * size],
+          shadowSize: [size * 41, size * 41],
+          //iconSize: [25, 41],
+          iconUrl: "http://cdn.leafletjs.com/leaflet-0.6.4/images/marker-icon.png",
+          iconSize : [size * 25, size * 41]
         });
         marker.setIcon(icon);
         marker.addTo(this.map);
