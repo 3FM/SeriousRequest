@@ -22,4 +22,5 @@ De geodata ontbreekt hierin helaas nog. Deze php scrapet het van de site:
 en die gebruiken we nou in deze app.
 
 In server staat een node.js-applicatie die deze 2 api's proxiet, zodat we deze zonder gedoe met cors 
-en zo kunnen gebruiken via ajax-calls. In principe is dat niet nodig als de kominactie.nl-api cors ondersteunt.
+en zo kunnen gebruiken via ajax-calls. In principe is dat niet meer nodig als de kominactie.nl-api cors ondersteunt,
+er blijft dan een pure client-side-applicatie over die eenvoudig overal kan worden gehost.
