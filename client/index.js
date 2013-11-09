@@ -1,4 +1,4 @@
-function Participant(id) {
+function Campaign(id) {
   this.id = id;
 }
 
@@ -7,13 +7,13 @@ function Campaigns(collectionid) {
   this.collectionid = collectionid;
 
 }
-Campaigns.prototype.getParticipants = function(callback)  {
+Campaigns.prototype.getActive = function(callback)  {
   $.get(
     "/EventOnWidgetService.asmx/GetActiveCampaignIds?collectionId=" + this.collectionid
     , function(data) {
       callback($(data).find("int").map(
         function(index, value) {
-          return new Participant($(value).html());
+          return new Campaign($(value).html());
         }
       ));
   });
@@ -28,7 +28,7 @@ $(function() {
   }).addTo(map);
 
   var campaigns = new Campaigns(4);
-  campaigns.getParticipants(function(result) {
+  campaigns.getActive(function(result) {
     console.log(result);
   });
 
