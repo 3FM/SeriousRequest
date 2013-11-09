@@ -22,6 +22,15 @@ Campaign.prototype.getURL = function() {
   return this.collection.getURL(this.id);
 };
 
+Campaign.prototype.getSponsorAmount = function() {
+  return parseFloat($(this.data).find("totalsponsoramount").html());
+};
+
+Campaign.prototype.getHtml = function() {
+  var amount = this.getSponsorAmount();
+  return this.getName() + (amount > 0 ? " &euro;" + this.getSponsorAmount() : "");
+}
+
 function Campaigner(id) {
   this.id = id;
 }
@@ -111,7 +120,7 @@ function Map(collection) {
       if (value.getLatLong()) {
         var latlong = value.getLatLong().split(", ").map(parseFloat);
         var marker = L.marker(latlong).addTo(this.map);
-		marker.bindPopup( value.getName() );
+	marker.bindPopup( value.getHtml() );
       }
     }.bind(this));
   }.bind(this));
