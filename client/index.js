@@ -38,7 +38,6 @@ Campaign.prototype.getHtml = function() {
   var amount = this.getSponsorAmount();
   returnstr += (amount > 0 ? "<p>Reeds &euro; " + this.getSponsorAmount() + " opgehaald!</p><br />" : "" );
   returnstr += "</a>";
-  console.log(this.getCampaigners());
   return returnstr;
 };
 Campaign.prototype.getCampaigners = function() {
