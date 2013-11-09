@@ -110,7 +110,7 @@ Collection.prototype.getActiveCampaigners = function(callback)  {
 
 
 function Map(collection) {
-  this.map = L.map('map').setView([52.197, 5.438], 7);
+  this.map = L.map('map').setView([52.197, 5.438], 8);
   L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 14, minZoom: 7,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
