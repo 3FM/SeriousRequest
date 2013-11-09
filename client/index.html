@@ -1,15 +1,29 @@
 <!DOCTYPE html >
 <html>
   <head>
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
      <link rel="stylesheet" href="style.css" />
      <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"> </script>
      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
      <script src="index.js"> </script>
+	 
+	<!-- bootstrap cdn -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <h1>Serious Request-kaart!</h1>
-    <div id="map"></div>
+	<div class="container">
+		<div class="page-header">
+			<h1>3FM Serious Request kaart!</h1>
+			<p>Blablabla</p>
+		</div>
+		<div class="row">
+			<div class="col-md-8" id="map"></div>
+			<div class="col-md-4" id="sidebar"> Layers <BR /> Filters <BR /> etc</div>
+		</div>
+	</div>
 
   </body>
 </html>
