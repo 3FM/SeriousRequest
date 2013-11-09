@@ -1,21 +1,30 @@
 var service =  "/EventOnWidgetService.asmx/";
 
-
-
 function Campaign(collection, id) {
   this.id = id;
   this.collection = collection;
   this.data = {};
 }
+
 Campaign.prototype.getLatLong = function() {
   return this.collection.getLatLon(this.id);
+};
+
+Campaign.prototype.getName = function() {
+  return this.collection.getName(this.id);
+};
+
+Campaign.prototype.getCity = function() {
+  return this.collection.getCity(this.id);
+};
+
+Campaign.prototype.getURL = function() {
+  return this.collection.getURL(this.id);
 };
 
 function Campaigner(id) {
   this.id = id;
 }
-
-
 
 function Collection(collectionid) {
   this.collectionid = collectionid;
@@ -28,9 +37,20 @@ function Collection(collectionid) {
   }.bind(this));
 }
 Collection.prototype.getLatLon = function(campaignId)  {
-
   return (this.geodata[campaignId] || {latLong: null}) .latLong;
 };
+
+Collection.prototype.getName = function(campaignId)  {
+  return (this.geodata[campaignId] || {name: null}) .name;
+};
+
+Collection.prototype.getCity = function(campaignId)  {
+  return (this.geodata[campaignId] || {city: null}) .city;
+};
+Collection.prototype.getURL = function(campaignId)  {
+  return (this.geodata[campaignId] || {URL: null}) .URL;
+};
+
 Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
     service + "GetActiveCampaignIds?collectionId=" + this.collectionid
@@ -91,6 +111,7 @@ function Map(collection) {
       if (value.getLatLong()) {
         var latlong = value.getLatLong().split(", ").map(parseFloat);
         var marker = L.marker(latlong).addTo(this.map);
+		marker.bindPopup( value.getName() );
       }
     }.bind(this));
   }.bind(this));
