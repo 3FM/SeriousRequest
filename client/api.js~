@@ -1,0 +1,5 @@
+function Campaigns(collectionid) {
+    if(typeof collectionid === "string") {
+	this.collectionId = collectionid;
+    }
+}
