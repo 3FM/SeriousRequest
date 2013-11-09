@@ -178,8 +178,9 @@ function Map(collection) {
     $.each(result, function(index, value) {
       if (value.getLatLong()) {
         var sponsorAmount = value.getSponsorAmount();
-        var size = sponsorAmount / 1000;
-        if (size > 1) size = 1;
+        var size = Math.sqrt(sponsorAmount / 1000);
+        if (size < 0.2) size = 0.2;
+        if (size > 2) size = 2;
         var latlong = value.getLatLong().split(", ").map(parseFloat);
         var marker = L.marker(latlong);
         var icon = L.icon({
