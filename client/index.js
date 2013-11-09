@@ -22,13 +22,14 @@ function Collection(collectionid) {
   $.getJSON("/geofeed.json", function(data) {
     this.geodata = {};
     $.each(data, function(i,value) {
-      this.geodata[value.id] = value;
+      this.geodata[parseInt(value.id)] = value;
     }.bind(this));
     if (this.callback) this.callback();
   }.bind(this));
 }
 Collection.prototype.getLatLon = function(campaignId)  {
-  return this.geodata[campaignId].latLong;
+
+  return (this.geodata[campaignId] || {latLong: null}) .latLong;
 };
 Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
@@ -79,26 +80,26 @@ Collection.prototype.getActiveCampaigners = function(callback)  {
 };
 
 
-function Map() {
-  var map = L.map('map').setView([52.197, 5.438], 7);
+function Map(collection) {
+  this.map = L.map('map').setView([52.197, 5.438], 7);
   L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 14, minZoom: 7,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
+  }).addTo(this.map);
+  collection.getActiveCampaigns(function(result) {
+    $.each(result, function(index, value) {
+      if (value.getLatLong()) {
+        var latlong = value.getLatLong().split(", ").map(parseFloat);
+        var marker = L.marker(latlong).addTo(this.map);
+      }
+    }.bind(this));
+  }.bind(this));
 };
 
 $(function() {
 
 
   var collection  = new Collection(4);
-  collection.getActiveCampaigns(function(result) {
-    console.log(result[35].getLatLong());
-  });
-
-  collection.getActiveCampaigners(function(result) {
-
-  });
-
+  new Map(collection);
 
 });
