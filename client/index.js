@@ -1,20 +1,43 @@
-function Participant(id) {
+var service =  "/EventOnWidgetService.asmx/";
+
+function Campaign(id) {
   this.id = id;
 }
 
-function Campaigns(collectionid) {
+function Campaigner(id) {
+  this.id = id;
+}
+
+
+
+function Collection(collectionid) {
   this.collectionid = collectionid;
 
 }
-Campaigns.prototype.getParticipants = function(callback)  {
+Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
-    "/EventOnWidgetService.asmx/GetActiveCampaignIds?collectionId=" + this.collectionid
+    service + "GetActiveCampaignIds?collectionId=" + this.collectionid
     , function(data) {
-      var result = [];
-
+      var ids = $(data).find("int").map(
+        function(index, value) {
+          return parseInt($(value).html());
+        });
+      console.log(ids);
+      $.get(
+        service + "GetCampaignsByIds?idsToGetString=" + $.makeArray(ids).join(",")
+        , function(data) {
+           console.log(data);
+        }
+      );
+  });
+};
+Collection.prototype.getActiveCampaigners = function(callback)  {
+  $.get(
+    service + "GetActiveCampaignerIds?collectionId=" + this.collectionid
+    , function(data) {
       callback($(data).find("int").map(
-        function(o, value) {
-          return $(value).html();
+        function(index, value) {
+          return new Campaigner(parseInt($(value).html()));
         }
       ));
   });
@@ -28,6 +51,13 @@ $(function() {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
   }).addTo(map);
 
-  var campaigns = new Campaigns(4);
-  console.log(campaigns.getParticipants());
+  var collection  = new Collection(4);
+  collection.getActiveCampaigns(function(result) {
+    console.log(result);
+  });
+
+  collection.getActiveCampaigners(function(result) {
+    console.log(result);
+  });
+
 });
