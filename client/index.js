@@ -1,3 +1,5 @@
+var service =  "/EventOnWidgetService.asmx/";
+
 function Campaign(id) {
   this.id = id;
 }
@@ -7,28 +9,35 @@ function Campaigner(id) {
 }
 
 
+
 function Collection(collectionid) {
   this.collectionid = collectionid;
 
 }
 Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
-    "/EventOnWidgetService.asmx/GetActiveCampaignIds?collectionId=" + this.collectionid
+    service + "GetActiveCampaignIds?collectionId=" + this.collectionid
     , function(data) {
-      callback($(data).find("int").map(
+      var ids = $(data).find("int").map(
         function(index, value) {
-          return new Campaign($(value).html());
+          return parseInt($(value).html());
+        });
+      console.log(ids);
+      $.get(
+        service + "GetCampaignsByIds?idsToGetString=" + $.makeArray(ids).join(",")
+        , function(data) {
+           console.log(data);
         }
-      ));
+      );
   });
 };
 Collection.prototype.getActiveCampaigners = function(callback)  {
   $.get(
-    "/EventOnWidgetService.asmx/GetActiveCampaignersIds?collectionId=" + this.collectionid
+    service + "GetActiveCampaignerIds?collectionId=" + this.collectionid
     , function(data) {
       callback($(data).find("int").map(
         function(index, value) {
-          return new Campaigner($(value).html());
+          return new Campaigner(parseInt($(value).html()));
         }
       ));
   });
@@ -44,6 +53,10 @@ $(function() {
 
   var collection  = new Collection(4);
   collection.getActiveCampaigns(function(result) {
+    console.log(result);
+  });
+
+  collection.getActiveCampaigners(function(result) {
     console.log(result);
   });
 
