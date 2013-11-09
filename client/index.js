@@ -30,6 +30,9 @@ Campaign.prototype.getHtml = function() {
   var amount = this.getSponsorAmount();
   return this.getName() + (amount > 0 ? " &euro;" + this.getSponsorAmount() : "");
 };
+Campaign.prototype.getCampaigners = function() {
+  return this.collection.getCampaigners(this.id);
+};
 
 function Campaigner(id) {
   this.id = id;
@@ -65,79 +68,88 @@ Collection.prototype.getURL = function(campaignId)  {
   return (this.geodata[campaignId] || {URL: null}) .URL;
 };
 Collection.prototype.getCampaign = function(id, callback) {
-
+  this.getActiveActiveCampaigns(function() {
+  });
 };
 Collection.prototype.getActiveCampaigns = function(callback)  {
-  $.get(
-    service + "GetActiveCampaignIds?collectionId=" + this.collectionid
-    , function(data) {
-      var campaigns = {};
-      var ids = $(data).find("int").map(
-        function(index, value) {
-          return parseInt($(value).html());
-        });
-      $(ids).each(function(i, id) {
-        campaigns[id] = new Campaign(this, id);
-      }.bind(this));
-      var l = ids.length;
-      for (var i = 0; i < ids.length ; i+=100) {
-        $.get(
-          service + "GetCampaignsByIds?idsToGetString=" + $.makeArray(ids).splice(i, 100).join(",")
-          , function(data) {
-            $(data).find("Campaign").each(function(index, d) {
-              var id =  parseInt($(d).find("CampaignId").html());
-              campaigns[id].data = $(d);
-              l--;
-            });
-            if(l == 0) {
+  if (this.campaigns) {
+    callback(this.campaigns);
+  } else {
+    $.get(
+      service + "GetActiveCampaignIds?collectionId=" + this.collectionid
+      , function(data) {
+        this.campaigns = {};
+        var ids = $(data).find("int").map(
+          function(index, value) {
+            return parseInt($(value).html());
+          });
+        $(ids).each(function(i, id) {
+          this.campaigns[id] = new Campaign(this, id);
+        }.bind(this));
+        var l = ids.length;
+        for (var i = 0; i < ids.length ; i+=100) {
+          $.get(
+            service + "GetCampaignsByIds?idsToGetString=" + $.makeArray(ids).splice(i, 100).join(",")
+            , function(data) {
+              $(data).find("Campaign").each(function(index, d) {
+                var id =  parseInt($(d).find("CampaignId").html());
+                this.campaigns[id].data = $(d);
+                l--;
+              }.bind(this));
+              if(l == 0) {
                 if (this.geodata) {
-                  callback(campaigns);
+                  callback(this.campaigns);
                 } else {
                   this.callbacks.add(function() {
-                    callback(compaigns);
-                  });
+                    callback(this.compaigns);
+                  }.bind(this));
                 }
-            }
-          }.bind(this)
-        );
-      }
-  }.bind(this));
+              }
+            }.bind(this)
+          );
+        }
+      }.bind(this));
+  }
 };
 Collection.prototype.getActiveCampaigners = function(callback)  {
-  $.get(
-    service + "GetActiveCampaignerIds?collectionId=" + this.collectionid
-    , function(data) {
-      var campaigers = {};
-      var ids = $(data).find("int").map(
-        function(index, value) {
-          return parseInt($(value).html());
-        });
-      $(ids).each(function(i, id) {
-        campaigners[id] = new Campaigner(id);
-      }.bind(this));
-      var l = ids.length;
-      for (var i = 0; i < ids.length ; i+=100) {
-        $.get(
-          service + "GetCampaignerssByIds?idsToGetString=" + $.makeArray(ids).splice(i, 100).join(",")
-          , function(data) {
-            $(data).find("Campaigner").each(function(index, d) {
-              var id =  parseInt($(d).find("PersonId").html());
-              campaigners[id].data = $(d);
-              l--;
-            });
-            if(l == 0) {
+  if (this.campaigners) {
+    callback(this.campaigerns);
+  } else {
+    $.get(
+      service + "GetActiveCampaignerIds?collectionId=" + this.collectionid
+      , function(data) {
+        this.campaigers = {};
+        var ids = $(data).find("int").map(
+          function(index, value) {
+            return parseInt($(value).html());
+          });
+        $(ids).each(function(i, id) {
+          this.campaigners[id] = new Campaigner(id);
+        }.bind(this));
+        var l = ids.length;
+        for (var i = 0; i < ids.length ; i+=100) {
+          $.get(
+            service + "GetCampaignerssByIds?idsToGetString=" + $.makeArray(ids).splice(i, 100).join(",")
+            , function(data) {
+              $(data).find("Campaigner").each(function(index, d) {
+                var id =  parseInt($(d).find("PersonId").html());
+                this.campaigners[id].data = $(d);
+                l--;
+              }.bind(this));
+              if(l == 0) {
                 if (this.geodata) {
-                  callback(campaigners);
+                  callback(this.campaigners);
                 } else {
                   this.callbacks.add(function() {
-                    callback(compaigners);
-                  });
+                    callback(this.compaigners);
+                  }.bind(this));
                 }
-            }
-          }.bind(this)
-        );
-      }
-  });
+              }
+            }.bind(this)
+          );
+        }
+      }.bind(this));
+  }
 };
 
 
@@ -151,8 +163,13 @@ function Map(collection) {
     $.each(result, function(index, value) {
       if (value.getLatLong()) {
         var latlong = value.getLatLong().split(", ").map(parseFloat);
-        var marker = L.marker(latlong).addTo(this.map);
-	marker.bindPopup( value.getHtml() );
+        var marker = L.marker(latlong);
+        var icon = L.icon({
+          iconSize : [Math.random() * 200, Math.random() * 200]
+        });
+        marker.setIcon(icon);
+        marker.addTo(this.map);
+	marker.bindPopup(value.getHtml());
       }
     }.bind(this));
   }.bind(this));
