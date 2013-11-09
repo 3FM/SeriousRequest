@@ -38,6 +38,7 @@ Campaign.prototype.getHtml = function() {
   var amount = this.getSponsorAmount();
   returnstr += (amount > 0 ? "<p>Reeds &euro; " + this.getSponsorAmount() + " opgehaald!</p><br />" : "" );
   returnstr += "</a>";
+  console.log(this.getCampaigners());
   return returnstr;
 };
 Campaign.prototype.getCampaigners = function() {
@@ -166,7 +167,9 @@ Collection.prototype.getActiveCampaigners = function(callback)  {
       }.bind(this));
   }
 };
-
+Collection.prototype.getCampaigners = function(id) {
+  return this.campaigners;
+};
 
 function Map(collection) {
   this.map = L.map('map').setView([52.197, 5.438], 8);
@@ -174,21 +177,23 @@ function Map(collection) {
     maxZoom: 14, minZoom: 7,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   }).addTo(this.map);
+  var colors = ["blue", "green", "pink", "red", "thing", "yellow"];
   collection.getActiveCampaigns(function(result) {
     $.each(result, function(index, value) {
       if (value.getLatLong()) {
         var sponsorAmount = value.getSponsorAmount();
-        var size = Math.sqrt(sponsorAmount / 1000);
-        if (size < 0.2) size = 0.2;
-        if (size > 2) size = 2;
+        var size = Math.sqrt(Math.sqrt(sponsorAmount / 1000));
+        if (size < 0.3) size = 0.3;
+        if (size > 3) size = 3;
         var latlong = value.getLatLong().split(", ").map(parseFloat);
         var marker = L.marker(latlong);
+
         var icon = L.icon({
           iconAnchor: [size * 12, size * 41],
           popupAnchor: [1, -34 * size],
           shadowSize: [size * 41, size * 41],
           //iconSize: [25, 41],
-          iconUrl: "http://cdn.leafletjs.com/leaflet-0.6.4/images/marker-icon.png",
+          iconUrl: "/icons/" + colors[index % colors.length] + ".png",
           iconSize : [size * 25, size * 41]
         });
         marker.setIcon(icon);
