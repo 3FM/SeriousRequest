@@ -2,18 +2,33 @@ function Campaign(id) {
   this.id = id;
 }
 
+function Campaigner(id) {
+  this.id = id;
+}
 
-function Campaigns(collectionid) {
+
+function Collection(collectionid) {
   this.collectionid = collectionid;
 
 }
-Campaigns.prototype.getActive = function(callback)  {
+Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
     "/EventOnWidgetService.asmx/GetActiveCampaignIds?collectionId=" + this.collectionid
     , function(data) {
       callback($(data).find("int").map(
         function(index, value) {
           return new Campaign($(value).html());
+        }
+      ));
+  });
+};
+Collection.prototype.getActiveCampaigners = function(callback)  {
+  $.get(
+    "/EventOnWidgetService.asmx/GetActiveCampaignersIds?collectionId=" + this.collectionid
+    , function(data) {
+      callback($(data).find("int").map(
+        function(index, value) {
+          return new Campaigner($(value).html());
         }
       ));
   });
@@ -27,8 +42,8 @@ $(function() {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
   }).addTo(map);
 
-  var campaigns = new Campaigns(4);
-  campaigns.getActive(function(result) {
+  var collection  = new Collection(4);
+  collection.getActiveCampaigns(function(result) {
     console.log(result);
   });
 
