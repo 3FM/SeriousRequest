@@ -37,7 +37,7 @@ Campaign.prototype.getHtml = function() {
   returnstr += '<img align="center" src="http://www.kominactie.nl/' + this.getPhotoURL() + '" />';
   var amount = this.getSponsorAmount();
   returnstr += (amount > 0 ? "<p>Reeds &euro; " + this.getSponsorAmount() + " opgehaald!</p><br />" : "" );
-  returnstr += returnstr + "</a>";
+  returnstr += "</a>";
   return returnstr;
 };
 Campaign.prototype.getCampaigners = function() {
