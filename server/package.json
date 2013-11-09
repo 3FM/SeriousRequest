@@ -1,5 +1,8 @@
 {
-	"name": "3FM server",
+	"name": "3FMserver",
 	"version": "0.0.1",
 	"dependencies": {
-		
+		"express": "3.x.x",
+		"coffee-script": "1.1.x"
+	}
+}
