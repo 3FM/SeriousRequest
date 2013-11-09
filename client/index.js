@@ -2,10 +2,14 @@ var service =  "/EventOnWidgetService.asmx/";
 
 
 
-function Campaign(id) {
+function Campaign(collection, id) {
   this.id = id;
+  this.collection = collection;
   this.data = {};
 }
+Campaign.prototype.getLatLong = function() {
+  return this.collection.getLatLon(this.id);
+};
 
 function Campaigner(id) {
   this.id = id;
@@ -16,10 +20,16 @@ function Campaigner(id) {
 function Collection(collectionid) {
   this.collectionid = collectionid;
   $.getJSON("/geofeed.json", function(data) {
-    this.geodata = data;
-    console.log(data);
+    this.geodata = {};
+    $.each(data, function(i,value) {
+      this.geodata[value.id] = value;
+    }.bind(this));
+    if (this.callback) this.callback();
   }.bind(this));
 }
+Collection.prototype.getLatLon = function(campaignId)  {
+  return this.geodata[campaignId].latLong;
+};
 Collection.prototype.getActiveCampaigns = function(callback)  {
   $.get(
     service + "GetActiveCampaignIds?collectionId=" + this.collectionid
@@ -30,8 +40,8 @@ Collection.prototype.getActiveCampaigns = function(callback)  {
           return parseInt($(value).html());
         });
       $(ids).each(function(i, id) {
-        campaigns[id] = new Campaign(id);
-      });
+        campaigns[id] = new Campaign(this, id);
+      }.bind(this));
       var l = ids.length;
       for (var i = 0; i < ids.length ; i+=100) {
         $.get(
@@ -43,12 +53,18 @@ Collection.prototype.getActiveCampaigns = function(callback)  {
               l--;
             });
             if(l == 0) {
-              callback(campaigns);
+                if (this.geodata) {
+                  callback(campaigns);
+                } else {
+                  this.callback = function() {
+                    callback(compaigns);
+                  };
+                }
             }
-          }
+          }.bind(this)
         );
       }
-  });
+  }.bind(this));
 };
 Collection.prototype.getActiveCampaigners = function(callback)  {
   $.get(
@@ -63,20 +79,26 @@ Collection.prototype.getActiveCampaigners = function(callback)  {
 };
 
 
-$(function() {
+function Map() {
   var map = L.map('map').setView([52.197, 5.438], 7);
   L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 14, minZoom: 7,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+};
+
+$(function() {
+
+
   var collection  = new Collection(4);
   collection.getActiveCampaigns(function(result) {
-
+    console.log(result[35].getLatLong());
   });
 
   collection.getActiveCampaigners(function(result) {
 
   });
+
 
 });
