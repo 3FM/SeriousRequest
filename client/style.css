@@ -1,3 +1,40 @@
+/** GENERAL **/
+body {
+	background: url('http://seriousrequest.3fm.nl/data/image/abc_media_image/2013.09/2832762050.jpg') no-repeat top center;
+}
+
+/** HEADER **/
+.page-header {
+	overflow: hidden;
+	border: 0;
+}
+
+#page-header-logo {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	float: left;
+	
+	width: 264px;
+	height: 100px;
+	
+	text-indent: -3333px;
+	
+	background: url('img/sr_logo.png');
+}
+
+#page-header-title {
+	overflow: hidden;
+	padding-left: 45px;
+	
+	font-size: 50px;
+	color: #fff;
+}
+
+#content {
+	background: #fff;
+}
+
 #map {
     height: 640px;
 }
