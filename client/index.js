@@ -22,14 +22,24 @@ Campaign.prototype.getURL = function() {
   return this.collection.getURL(this.id);
 };
 
+Campaign.prototype.getPhotoURL = function() {
+  return this.collection.getPhotoURL(this.id);
+};
+
 Campaign.prototype.getSponsorAmount = function() {
   return parseFloat($(this.data).find("totalsponsoramount").html());
 };
 
 Campaign.prototype.getHtml = function() {
+  var returnstr = ""
+  returnstr = returnstr + '<a href="http://www.kominactie.nl' +this.getURL()+'" target="_blank">';
+  returnstr = returnstr + "<strong>" + this.getName() + "</strong><br />";
+  returnstr = returnstr + '<img align="center" src="http://www.kominactie.nl/' + this.getPhotoURL() + '" />'
   var amount = this.getSponsorAmount();
-  return this.getName() + (amount > 0 ? " &euro;" + this.getSponsorAmount() : "");
-};
+  returnstr = returnstr + (amount > 0 ? "<p>Reeds &euro; " + this.getSponsorAmount() + " opgehaald!</p><br />" : "" );
+  returnstr = returnstr + "</a>"
+  return returnstr;
+}
 
 function Campaigner(id) {
   this.id = id;
@@ -62,7 +72,11 @@ Collection.prototype.getCity = function(campaignId)  {
   return (this.geodata[campaignId] || {city: null}) .city;
 };
 Collection.prototype.getURL = function(campaignId)  {
-  return (this.geodata[campaignId] || {URL: null}) .URL;
+  return (this.geodata[campaignId] || {url: null}) .url;
+};
+
+Collection.prototype.getPhotoURL = function(campaignId)  {
+  return (this.geodata[campaignId] || {photo: null}) .photo;
 };
 Collection.prototype.getCampaign = function(id, callback) {
 
