@@ -12,7 +12,11 @@ Campaigns.prototype.getParticipants = function(callback)  {
     , function(data) {
       var result = [];
 
-    callback($(data).find("int").map(function(o, value) { return $(value).html();}));
+      callback($(data).find("int").map(
+        function(o, value) {
+          return $(value).html();
+        }
+      ));
   });
 };
 
